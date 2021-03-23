@@ -12,7 +12,9 @@ auto file::parse_map(const char *map_file, const bool optimized_read) -> bool
 	  std::ios::binary | (optimized_read ? std::ios::beg : std::ios::ate)};
 	if (!file.is_open())
 	{
+#ifdef _DEBUG
 		std::printf("Failed to open File '%s'\n", map_file);
+#endif
 		return false;
 	}
 
@@ -33,9 +35,11 @@ auto file::parse_map(const char *map_file, const bool optimized_read) -> bool
 	if (std::string_view{file_header.magic, 4u} != "VBSP")
 		return false;
 
+#ifdef _DEBUG
 	std::printf(
 	  "Attempting to parse BSP File with Version %d and Map Revision %d\n",
 	  file_header.version, file_header.map_revision);
+#endif
 
 	const auto ent_lump = file_header.lumps[LUMP_ENTITIES];
 
@@ -54,9 +58,11 @@ auto file::parse_map(const uint8_t *data, const size_t size) -> bool
 	if (std::string_view{file_header.magic, 4u} != "VBSP")
 		return false;
 
+#ifdef _DEBUG
 	std::printf(
 	  "Attempting to parse BSP File with Version %d and Map Revision %d\n",
 	  file_header.version, file_header.map_revision);
+#endif
 
 	const auto ent_lump = file_header.lumps[LUMP_ENTITIES];
 	parse_entities(data + ent_lump.offset, ent_lump.length);
@@ -87,5 +93,7 @@ void file::parse_entities(const uint8_t *lump_data, const size_t lump_size)
 		lump_view.remove_prefix(block_end + 1u);
 	}
 
+#ifdef _DEBUG
 	std::printf("Parsed %d Entities\n", _entities.size());
+#endif
 }
